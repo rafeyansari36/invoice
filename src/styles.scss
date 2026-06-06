@@ -1,0 +1,16 @@
+/* Global styles */
+* {
+  margin: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  -webkit-text-size-adjust: 100%;
+  background: #f3f4f6;
+}

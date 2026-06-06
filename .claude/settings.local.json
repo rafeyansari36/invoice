@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npx --yes @angular/cli@latest new invoice-maker --directory . --style=scss --ssr=false --routing=false --skip-git --defaults)"
+    ]
+  }
+}
