@@ -209,6 +209,14 @@ input {
   }
 }
 
+.btn-install {
+  background: var(--brand);
+  color: #fff;
+  &:hover {
+    background: var(--brand-dark);
+  }
+}
+
 .btn-add {
   background: #ecfdf5;
   color: #047857;

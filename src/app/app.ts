@@ -1,8 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe, DatePipe } from '@angular/common';
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import type { jsPDF } from 'jspdf';
 
 interface Product {
   name: string;
@@ -60,8 +59,38 @@ export class App {
   toastMessage = '';
   private toastTimer: ReturnType<typeof setTimeout> | undefined;
 
+  /** PWA install */
+  canInstall = false;
+  private deferredPrompt: any = null;
+
   constructor() {
     this.loadList();
+  }
+
+  // ---- PWA install ----
+  @HostListener('window:beforeinstallprompt', ['$event'])
+  onBeforeInstall(event: Event): void {
+    event.preventDefault();
+    this.deferredPrompt = event;
+    this.canInstall = true;
+  }
+
+  @HostListener('window:appinstalled')
+  onAppInstalled(): void {
+    this.deferredPrompt = null;
+    this.canInstall = false;
+    this.showToast('🎉 App installed');
+  }
+
+  async installApp(): Promise<void> {
+    if (!this.deferredPrompt) {
+      this.showToast('ℹ️ Use your browser menu → "Add to Home screen"');
+      return;
+    }
+    this.deferredPrompt.prompt();
+    await this.deferredPrompt.userChoice;
+    this.deferredPrompt = null;
+    this.canInstall = false;
   }
 
   // ---- Line items ----
@@ -222,7 +251,9 @@ export class App {
     return `${safe}.pdf`;
   }
 
-  private buildPdf(): jsPDF {
+  private async buildPdf(): Promise<jsPDF> {
+    const { jsPDF } = await import('jspdf');
+    const autoTable = (await import('jspdf-autotable')).default;
     const doc = new jsPDF({ unit: 'pt', format: 'a4' });
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 40;
@@ -301,13 +332,14 @@ export class App {
     return doc;
   }
 
-  downloadPdf(): void {
-    this.buildPdf().save(this.fileName());
+  async downloadPdf(): Promise<void> {
+    const doc = await this.buildPdf();
+    doc.save(this.fileName());
     this.showToast('⬇️ PDF downloaded');
   }
 
   async sharePdf(): Promise<void> {
-    const doc = this.buildPdf();
+    const doc = await this.buildPdf();
     const blob = doc.output('blob');
     const file = new File([blob], this.fileName(), { type: 'application/pdf' });
     const nav = navigator as Navigator & {

@@ -1,6 +1,9 @@
 <div class="page">
   <header class="app-bar no-print">
     <h1>🧾 Invoice Maker</h1>
+    @if (canInstall) {
+      <button type="button" class="btn btn-install" (click)="installApp()">⬇️ Install app</button>
+    }
   </header>
 
   <!-- Saved invoices (history) -->
