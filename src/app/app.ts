@@ -1,6 +1,7 @@
 import { Component, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe, DatePipe } from '@angular/common';
+import { LucideAngularModule } from 'lucide-angular';
 import type { jsPDF } from 'jspdf';
 
 interface Product {
@@ -11,6 +12,7 @@ interface Product {
 
 interface InvoiceData {
   businessName: string;
+  ownerName: string;
   businessPhone: string;
   customerName: string;
   customerPhone: string;
@@ -18,6 +20,13 @@ interface InvoiceData {
   invoiceDate: string;
   products: Product[];
 }
+
+/** Default business identity (pre-filled into every new invoice). */
+const DEFAULT_BUSINESS = {
+  businessName: 'Noori',
+  ownerName: 'Danish',
+  businessPhone: '9762239565'
+};
 
 interface SavedInvoice extends InvoiceData {
   id: string;
@@ -29,14 +38,15 @@ const OLD_KEY = 'invoice-maker.invoice';
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule, DecimalPipe, DatePipe],
+  imports: [FormsModule, DecimalPipe, DatePipe, LucideAngularModule],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
   /** Seller / your details */
-  businessName = '';
-  businessPhone = '';
+  businessName = DEFAULT_BUSINESS.businessName;
+  ownerName = DEFAULT_BUSINESS.ownerName;
+  businessPhone = DEFAULT_BUSINESS.businessPhone;
 
   /** Customer details */
   customerName = '';
@@ -79,12 +89,12 @@ export class App {
   onAppInstalled(): void {
     this.deferredPrompt = null;
     this.canInstall = false;
-    this.showToast('🎉 App installed');
+    this.showToast('App installed');
   }
 
   async installApp(): Promise<void> {
     if (!this.deferredPrompt) {
-      this.showToast('ℹ️ Use your browser menu → "Add to Home screen"');
+      this.showToast('Use your browser menu → "Add to Home screen"');
       return;
     }
     this.deferredPrompt.prompt();
@@ -167,6 +177,7 @@ export class App {
   private snapshot(): InvoiceData {
     return {
       businessName: this.businessName,
+      ownerName: this.ownerName,
       businessPhone: this.businessPhone,
       customerName: this.customerName,
       customerPhone: this.customerPhone,
@@ -184,19 +195,20 @@ export class App {
 
     if (existing) {
       Object.assign(existing, data, { savedAt: Date.now() });
-      this.showToast(this.persistList() ? '✅ Invoice updated' : '⚠️ Could not save');
+      this.showToast(this.persistList() ? 'Invoice updated' : 'Could not save');
     } else {
       const id = this.newId();
       this.savedInvoices.unshift({ ...data, id, savedAt: Date.now() });
       this.currentId = id;
-      this.showToast(this.persistList() ? '💾 Saved on this device' : '⚠️ Could not save');
+      this.showToast(this.persistList() ? 'Saved on this device' : 'Could not save');
     }
     this.showSaved = true;
   }
 
   editInvoice(inv: SavedInvoice): void {
-    this.businessName = inv.businessName ?? '';
-    this.businessPhone = inv.businessPhone ?? '';
+    this.businessName = inv.businessName ?? DEFAULT_BUSINESS.businessName;
+    this.ownerName = inv.ownerName ?? DEFAULT_BUSINESS.ownerName;
+    this.businessPhone = inv.businessPhone ?? DEFAULT_BUSINESS.businessPhone;
     this.customerName = inv.customerName ?? '';
     this.customerPhone = inv.customerPhone ?? '';
     this.invoiceNumber = inv.invoiceNumber ?? this.nextInvoiceNumber();
@@ -206,7 +218,7 @@ export class App {
         ? inv.products.map((p) => ({ ...p }))
         : [{ name: '', quantity: 1, mrp: 0 }];
     this.currentId = inv.id;
-    this.showToast('✏️ Editing — remember to Save');
+    this.showToast('Editing — remember to Save');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -215,25 +227,24 @@ export class App {
     this.savedInvoices = this.savedInvoices.filter((i) => i.id !== inv.id);
     if (this.currentId === inv.id) this.currentId = null;
     this.persistList();
-    this.showToast('🗑️ Invoice deleted');
+    this.showToast('Invoice deleted');
   }
 
   newInvoice(): void {
     if (
-      (this.customerName || this.businessName || this.grandTotal > 0) &&
-      !confirm('Start a new blank invoice? Unsaved changes will be lost.')
+      (this.customerName || this.grandTotal > 0) &&
+      !confirm('Start a new invoice? Unsaved changes will be lost. (Your business details are kept.)')
     ) {
       return;
     }
-    this.businessName = '';
-    this.businessPhone = '';
+    // Keep the business identity, clear the customer + items.
     this.customerName = '';
     this.customerPhone = '';
     this.invoiceNumber = this.nextInvoiceNumber();
     this.invoiceDate = new Date().toISOString().substring(0, 10);
     this.products = [{ name: '', quantity: 1, mrp: 0 }];
     this.currentId = null;
-    this.showToast('🧾 New invoice');
+    this.showToast('New invoice');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -260,45 +271,77 @@ export class App {
     const money = (n: number) =>
       n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+    // --- Brand logo mark (drawn as vector) ---
+    doc.setFillColor(37, 99, 235);
+    doc.roundedRect(margin, 28, 46, 46, 11, 11, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(28);
+    doc.setTextColor(255, 255, 255);
+    doc.text('N', margin + 23, 60, { align: 'center' });
+    doc.setFillColor(251, 191, 36); // gold "light" accent
+    doc.circle(margin + 38, 39, 4, 'F');
+
+    // --- Wordmark ---
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    doc.setTextColor(31, 41, 55);
+    doc.text(this.businessName || 'Noori', margin + 58, 52);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(107, 114, 128);
+    doc.text('BILLING MADE SIMPLE', margin + 59, 66);
+
+    // --- INVOICE heading (right) ---
+    doc.setFont('helvetica', 'bold');
     doc.setFontSize(22);
     doc.setTextColor(37, 99, 235);
-    doc.text('INVOICE', margin, 50);
+    doc.text('INVOICE', pageWidth - margin, 48, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(90);
+    doc.text(`Invoice No: ${this.invoiceNumber || '-'}`, pageWidth - margin, 66, {
+      align: 'right'
+    });
+    doc.text(`Date: ${this.invoiceDate || '-'}`, pageWidth - margin, 80, {
+      align: 'right'
+    });
 
+    // --- From ---
+    let y = 116;
     doc.setFontSize(10);
     doc.setTextColor(120);
-    doc.text('FROM', margin, 80);
+    doc.text('FROM', margin, y);
     doc.setFontSize(12);
     doc.setTextColor(30);
-    doc.text(this.businessName || '-', margin, 96);
+    doc.text(this.businessName || '-', margin, (y += 16));
+    if (this.ownerName) {
+      doc.setFontSize(10);
+      doc.setTextColor(90);
+      doc.text(this.ownerName, margin, (y += 14));
+    }
     if (this.businessPhone) {
       doc.setFontSize(10);
       doc.setTextColor(90);
-      doc.text(this.businessPhone, margin, 110);
+      doc.text('Ph: ' + this.businessPhone, margin, (y += 14));
     }
 
+    // --- Bill To ---
+    let by = 116;
+    const billX = pageWidth - margin;
     doc.setFontSize(10);
     doc.setTextColor(120);
-    doc.text('BILL TO', margin, 136);
+    doc.text('BILL TO', billX, by, { align: 'right' });
     doc.setFontSize(12);
     doc.setTextColor(30);
-    doc.text(this.customerName || '-', margin, 152);
+    doc.text(this.customerName || '-', billX, (by += 16), { align: 'right' });
     if (this.customerPhone) {
       doc.setFontSize(10);
       doc.setTextColor(90);
-      doc.text(this.customerPhone, margin, 166);
+      doc.text('Ph: ' + this.customerPhone, billX, (by += 14), { align: 'right' });
     }
 
-    doc.setFontSize(10);
-    doc.setTextColor(90);
-    doc.text(`Invoice No: ${this.invoiceNumber || '-'}`, pageWidth - margin, 80, {
-      align: 'right'
-    });
-    doc.text(`Date: ${this.invoiceDate || '-'}`, pageWidth - margin, 96, {
-      align: 'right'
-    });
-
     autoTable(doc, {
-      startY: 190,
+      startY: Math.max(y, by) + 24,
       margin: { left: margin, right: margin },
       head: [['#', 'Product', 'Qty', 'MRP', 'Total']],
       body: this.products.map((p, i) => [
@@ -335,7 +378,7 @@ export class App {
   async downloadPdf(): Promise<void> {
     const doc = await this.buildPdf();
     doc.save(this.fileName());
-    this.showToast('⬇️ PDF downloaded');
+    this.showToast('PDF downloaded');
   }
 
   async sharePdf(): Promise<void> {
@@ -358,7 +401,7 @@ export class App {
       }
     } else {
       doc.save(this.fileName());
-      this.showToast('⬇️ Sharing not supported here — PDF downloaded instead');
+      this.showToast('Sharing not supported here — PDF downloaded instead');
     }
   }
 

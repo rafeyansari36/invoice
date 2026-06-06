@@ -1,8 +1,10 @@
 <div class="page">
   <header class="app-bar no-print">
-    <h1>🧾 Invoice Maker</h1>
+    <h1><img class="app-mark" src="logo-mark.svg" alt="" /> Invoice Maker</h1>
     @if (canInstall) {
-      <button type="button" class="btn btn-install" (click)="installApp()">⬇️ Install app</button>
+      <button type="button" class="btn btn-install" (click)="installApp()">
+        <lucide-icon name="download" [size]="18"></lucide-icon> Install app
+      </button>
     }
   </header>
 
@@ -10,8 +12,11 @@
   @if (savedInvoices.length) {
     <section class="saved no-print">
       <button type="button" class="saved-head" (click)="toggleSaved()" [attr.aria-expanded]="showSaved">
-        <span>📁 Saved invoices ({{ savedInvoices.length }})</span>
-        <span class="chevron" [class.open]="showSaved">▾</span>
+        <span class="saved-head-label">
+          <lucide-icon name="folder-open" [size]="20"></lucide-icon>
+          Saved invoices ({{ savedInvoices.length }})
+        </span>
+        <lucide-icon name="chevron-down" class="chevron" [class.open]="showSaved" [size]="20"></lucide-icon>
       </button>
 
       @if (showSaved) {
@@ -30,8 +35,12 @@
                 </div>
               </div>
               <div class="saved-actions">
-                <button type="button" class="btn btn-edit" (click)="editInvoice(inv)" aria-label="Edit">✏️</button>
-                <button type="button" class="btn btn-del" (click)="deleteInvoice(inv)" aria-label="Delete">🗑️</button>
+                <button type="button" class="btn btn-edit" (click)="editInvoice(inv)" aria-label="Edit">
+                  <lucide-icon name="square-pen" [size]="18"></lucide-icon>
+                </button>
+                <button type="button" class="btn btn-del" (click)="deleteInvoice(inv)" aria-label="Delete">
+                  <lucide-icon name="trash-2" [size]="18"></lucide-icon>
+                </button>
               </div>
             </li>
           }
@@ -41,21 +50,34 @@
   }
 
   @if (currentId) {
-    <div class="editing-banner no-print">✏️ Editing a saved invoice — press <strong>Save</strong> to update it.</div>
+    <div class="editing-banner no-print">
+      <lucide-icon name="square-pen" [size]="16"></lucide-icon>
+      Editing a saved invoice — press <strong>Save</strong> to update it.
+    </div>
   }
 
   <main class="invoice" id="invoice">
+    <!-- Brand header -->
+    <div class="brand-header">
+      <img class="brand-logo" src="logo.svg" alt="Noori logo" />
+      <div class="brand-tag">INVOICE</div>
+    </div>
+
     <!-- Top section: parties -->
     <section class="parties">
       <div class="card">
         <h2>From</h2>
         <label>
-          <span>Your name / business</span>
-          <input type="text" [(ngModel)]="businessName" placeholder="e.g. Rafey Traders" />
+          <span>Business name</span>
+          <input type="text" [(ngModel)]="businessName" placeholder="e.g. Noori" />
+        </label>
+        <label>
+          <span>Your name</span>
+          <input type="text" [(ngModel)]="ownerName" placeholder="e.g. Danish" />
         </label>
         <label>
           <span>Phone</span>
-          <input type="tel" [(ngModel)]="businessPhone" placeholder="e.g. +91 98765 43210" />
+          <input type="tel" [(ngModel)]="businessPhone" placeholder="e.g. 9762239565" />
         </label>
       </div>
 
@@ -88,7 +110,9 @@
     <section class="items">
       <div class="items-head no-print">
         <h2>Products</h2>
-        <button type="button" class="btn btn-add" (click)="addProduct()">+ Add product</button>
+        <button type="button" class="btn btn-add" (click)="addProduct()">
+          <lucide-icon name="plus" [size]="18"></lucide-icon> Add product
+        </button>
       </div>
 
       <div class="table-wrap">
@@ -120,7 +144,9 @@
                   {{ lineTotal(p) | number:'1.2-2' }}
                 </td>
                 <td class="col-act no-print">
-                  <button type="button" class="btn btn-remove" (click)="removeProduct(i)" aria-label="Remove">✕</button>
+                  <button type="button" class="btn btn-remove" (click)="removeProduct(i)" aria-label="Remove">
+                    <lucide-icon name="trash-2" [size]="16"></lucide-icon>
+                  </button>
                 </td>
               </tr>
             }
@@ -153,19 +179,19 @@
   <!-- Action bar: sticky at the bottom on mobile -->
   <nav class="actions no-print">
     <button type="button" class="btn act act-save" (click)="save()">
-      <span class="ico">💾</span><span class="lbl">Save</span>
+      <lucide-icon name="save" class="ico" [size]="22"></lucide-icon><span class="lbl">Save</span>
     </button>
     <button type="button" class="btn act act-pdf" (click)="downloadPdf()">
-      <span class="ico">📄</span><span class="lbl">PDF</span>
+      <lucide-icon name="file-text" class="ico" [size]="22"></lucide-icon><span class="lbl">PDF</span>
     </button>
     <button type="button" class="btn act act-share" (click)="sharePdf()">
-      <span class="ico">📤</span><span class="lbl">Send</span>
+      <lucide-icon name="share-2" class="ico" [size]="22"></lucide-icon><span class="lbl">Send</span>
     </button>
     <button type="button" class="btn act act-print" (click)="print()">
-      <span class="ico">🖨️</span><span class="lbl">Print</span>
+      <lucide-icon name="printer" class="ico" [size]="22"></lucide-icon><span class="lbl">Print</span>
     </button>
     <button type="button" class="btn act act-new" (click)="newInvoice()">
-      <span class="ico">🧹</span><span class="lbl">New</span>
+      <lucide-icon name="file-plus" class="ico" [size]="22"></lucide-icon><span class="lbl">New</span>
     </button>
   </nav>
 

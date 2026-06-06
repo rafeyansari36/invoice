@@ -29,6 +29,15 @@
   h1 {
     font-size: 1.4rem;
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .app-mark {
+    height: 32px;
+    width: 32px;
+    display: block;
   }
 }
 
@@ -40,6 +49,30 @@
   border-radius: 14px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
   padding: clamp(1rem, 3vw, 2rem);
+}
+
+/* ---------- Brand header (on the invoice sheet) ---------- */
+.brand-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 2px solid var(--line);
+}
+
+.brand-logo {
+  height: 56px;
+  width: auto;
+  display: block;
+}
+
+.brand-tag {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--brand);
 }
 
 /* ---------- Parties ---------- */
@@ -194,8 +227,20 @@ input {
   font-size: 0.9rem;
 }
 
+/* ---------- Icons ---------- */
+lucide-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
 /* ---------- Buttons ---------- */
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   border: none;
   border-radius: 8px;
   padding: 0.6rem 1rem;
@@ -339,6 +384,12 @@ input {
   }
 }
 
+.saved-head-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .saved-list {
   list-style: none;
   margin: 0;
@@ -426,6 +477,9 @@ input {
   border-radius: 10px;
   padding: 0.6rem 0.9rem;
   font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 /* ---------- Mobile: turn rows into cards ---------- */
