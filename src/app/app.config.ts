@@ -5,6 +5,7 @@ import {
   isDevMode,
   importProvidersFrom
 } from '@angular/core';
+import { provideRouter } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 import {
   LucideAngularModule,
@@ -18,13 +19,16 @@ import {
   SquarePen,
   FolderOpen,
   ChevronDown,
-  Download
+  Download,
+  UserRoundPlus
 } from 'lucide-angular';
+import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
     importProvidersFrom(
       LucideAngularModule.pick({
         Save,
@@ -37,7 +41,8 @@ export const appConfig: ApplicationConfig = {
         SquarePen,
         FolderOpen,
         ChevronDown,
-        Download
+        Download,
+        UserRoundPlus
       })
     ),
     provideServiceWorker('ngsw-worker.js', {

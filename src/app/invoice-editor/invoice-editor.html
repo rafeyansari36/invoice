@@ -1,0 +1,151 @@
+@if (currentId) {
+  <div class="editing-banner no-print">
+    <lucide-icon name="square-pen" [size]="16"></lucide-icon>
+    Editing a saved invoice — press <strong>Save</strong> to update it.
+  </div>
+}
+
+<main class="invoice" id="invoice">
+  <!-- Brand header -->
+  <div class="brand-header">
+    <img class="brand-logo" src="logo.svg" alt="Noori logo" />
+    <div class="brand-tag">INVOICE</div>
+  </div>
+
+  <!-- Top section: parties -->
+  <section class="parties">
+    <div class="card">
+      <h2>From</h2>
+      <label>
+        <span>Business name</span>
+        <input type="text" [(ngModel)]="businessName" placeholder="e.g. Noori" />
+      </label>
+      <label>
+        <span>Your name</span>
+        <input type="text" [(ngModel)]="ownerName" placeholder="e.g. Danish" />
+      </label>
+      <label>
+        <span>Phone</span>
+        <input type="tel" [(ngModel)]="businessPhone" placeholder="e.g. 9762239565" />
+      </label>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Bill To</h2>
+        <button type="button" class="btn btn-contact no-print" (click)="pickContact()">
+          <lucide-icon name="user-round-plus" [size]="16"></lucide-icon>
+          From contacts
+        </button>
+      </div>
+      <label>
+        <span>Customer name</span>
+        <input type="text" [(ngModel)]="customerName" (ngModelChange)="onCustomerNameChange()" placeholder="e.g. John Doe" />
+      </label>
+      <label>
+        <span>Phone</span>
+        <input type="tel" [(ngModel)]="customerPhone" placeholder="e.g. +91 91234 56789" />
+      </label>
+    </div>
+
+    <div class="card">
+      <h2>Invoice</h2>
+      <label>
+        <span>Invoice no.</span>
+        <input type="text" [(ngModel)]="invoiceNumber" />
+      </label>
+      <label>
+        <span>Date</span>
+        <input type="date" [(ngModel)]="invoiceDate" />
+      </label>
+    </div>
+  </section>
+
+  <!-- Products: table on desktop, cards on mobile -->
+  <section class="items">
+    <div class="items-head no-print">
+      <h2>Products</h2>
+      <button type="button" class="btn btn-add" (click)="addProduct()">
+        <lucide-icon name="plus" [size]="18"></lucide-icon> Add product
+      </button>
+    </div>
+
+    <div class="table-wrap">
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th class="col-no">#</th>
+            <th class="col-name">Product</th>
+            <th class="col-num">Qty</th>
+            <th class="col-num">MRP (₹)</th>
+            <th class="col-num">Total (₹)</th>
+            <th class="col-act no-print"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of products; track trackByIndex($index); let i = $index) {
+            <tr>
+              <td class="col-no" data-label="#">{{ i + 1 }}</td>
+              <td class="col-name" data-label="Product">
+                <input type="text" [(ngModel)]="p.name" placeholder="Product name" />
+              </td>
+              <td class="col-num" data-label="Qty">
+                <input type="number" min="0" step="1" inputmode="numeric" [(ngModel)]="p.quantity" />
+              </td>
+              <td class="col-num" data-label="MRP">
+                <input type="number" min="0" step="0.01" inputmode="decimal" [(ngModel)]="p.mrp" />
+              </td>
+              <td class="col-num line-total" data-label="Total">
+                {{ lineTotal(p) | number:'1.2-2' }}
+              </td>
+              <td class="col-act no-print">
+                <button type="button" class="btn btn-remove" (click)="removeProduct(i)" aria-label="Remove">
+                  <lucide-icon name="trash-2" [size]="16"></lucide-icon>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr>
+            <td class="col-no"></td>
+            <td class="col-name"><strong>Total</strong></td>
+            <td class="col-num"><strong>{{ totalQuantity }}</strong></td>
+            <td class="col-num"></td>
+            <td class="col-num"><strong>{{ grandTotal | number:'1.2-2' }}</strong></td>
+            <td class="col-act no-print"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+
+  <!-- Grand total banner -->
+  <section class="grand">
+    <div class="grand-box">
+      <span>Total Amount</span>
+      <strong>₹ {{ grandTotal | number:'1.2-2' }}</strong>
+    </div>
+  </section>
+
+  <footer class="thanks">Thank you for your business!</footer>
+</main>
+
+<!-- Action bar: sticky at the bottom on mobile -->
+<nav class="actions no-print">
+  <button type="button" class="btn act act-save" (click)="save()">
+    <lucide-icon name="save" class="ico" [size]="22"></lucide-icon><span class="lbl">Save</span>
+  </button>
+  <button type="button" class="btn act act-pdf" (click)="downloadPdf()">
+    <lucide-icon name="file-text" class="ico" [size]="22"></lucide-icon><span class="lbl">PDF</span>
+  </button>
+  <button type="button" class="btn act act-share" (click)="sharePdf()">
+    <lucide-icon name="share-2" class="ico" [size]="22"></lucide-icon><span class="lbl">Send</span>
+  </button>
+  <button type="button" class="btn act act-print" (click)="print()">
+    <lucide-icon name="printer" class="ico" [size]="22"></lucide-icon><span class="lbl">Print</span>
+  </button>
+  <button type="button" class="btn act act-new" (click)="newInvoice()">
+    <lucide-icon name="file-plus" class="ico" [size]="22"></lucide-icon><span class="lbl">New</span>
+  </button>
+</nav>

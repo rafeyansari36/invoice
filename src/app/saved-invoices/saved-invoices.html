@@ -1,0 +1,47 @@
+<section class="saved-page">
+  <div class="saved-page-head">
+    <h2>
+      <lucide-icon name="folder-open" [size]="22"></lucide-icon>
+      Saved invoices ({{ count() }})
+    </h2>
+    <a class="btn btn-add" routerLink="/">
+      <lucide-icon name="file-plus" [size]="18"></lucide-icon> New invoice
+    </a>
+  </div>
+
+  @if (count()) {
+    <ul class="saved-list">
+      @for (inv of invoices(); track trackById($index, inv)) {
+        <li class="saved-item">
+          <div class="saved-info" (click)="edit(inv)">
+            <div class="saved-top">
+              <strong>{{ inv.customerName || 'No customer' }}</strong>
+              <span class="saved-amt">₹ {{ total(inv) | number:'1.2-2' }}</span>
+            </div>
+            <div class="saved-sub">
+              <span>{{ inv.invoiceNumber || '—' }}</span>
+              <span>{{ inv.invoiceDate }}</span>
+              <span class="saved-when">saved {{ inv.savedAt | date:'d MMM, h:mm a' }}</span>
+            </div>
+          </div>
+          <div class="saved-actions">
+            <button type="button" class="btn btn-edit" (click)="edit(inv)" aria-label="Edit">
+              <lucide-icon name="square-pen" [size]="18"></lucide-icon>
+            </button>
+            <button type="button" class="btn btn-del" (click)="remove(inv)" aria-label="Delete">
+              <lucide-icon name="trash-2" [size]="18"></lucide-icon>
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <div class="saved-empty">
+      <lucide-icon name="folder-open" [size]="40"></lucide-icon>
+      <p>No saved invoices yet.</p>
+      <a class="btn btn-add" routerLink="/">
+        <lucide-icon name="file-plus" [size]="18"></lucide-icon> Create your first invoice
+      </a>
+    </div>
+  }
+</section>
