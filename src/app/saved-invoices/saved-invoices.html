@@ -1,13 +1,35 @@
 <section class="saved-page">
+  <!-- Hidden input shared by both Import buttons -->
+  <input
+    #importInput
+    type="file"
+    accept="application/json,.json"
+    class="visually-hidden"
+    (change)="onImportFile($event)"
+  />
+
   <div class="saved-page-head">
     <h2>
       <lucide-icon name="folder-open" [size]="22"></lucide-icon>
       Saved invoices ({{ count() }})
     </h2>
-    <a class="btn btn-add" routerLink="/">
-      <lucide-icon name="file-plus" [size]="18"></lucide-icon> New invoice
-    </a>
+    <div class="saved-page-actions">
+      <button type="button" class="btn btn-ghost" (click)="importInput.click()">
+        <lucide-icon name="upload" [size]="18"></lucide-icon> Import
+      </button>
+      <button type="button" class="btn btn-ghost" (click)="exportInvoices()" [disabled]="!count()">
+        <lucide-icon name="download" [size]="18"></lucide-icon> Export
+      </button>
+      <a class="btn btn-add" routerLink="/">
+        <lucide-icon name="file-plus" [size]="18"></lucide-icon> New
+      </a>
+    </div>
   </div>
+
+  <p class="saved-hint">
+    Invoices are stored on this device only. Use <strong>Export</strong> to back them up or
+    move them to a new phone, then <strong>Import</strong> the file there.
+  </p>
 
   @if (count()) {
     <ul class="saved-list">
@@ -38,10 +60,15 @@
   } @else {
     <div class="saved-empty">
       <lucide-icon name="folder-open" [size]="40"></lucide-icon>
-      <p>No saved invoices yet.</p>
-      <a class="btn btn-add" routerLink="/">
-        <lucide-icon name="file-plus" [size]="18"></lucide-icon> Create your first invoice
-      </a>
+      <p>No saved invoices on this device.</p>
+      <div class="saved-empty-actions">
+        <a class="btn btn-add" routerLink="/">
+          <lucide-icon name="file-plus" [size]="18"></lucide-icon> Create invoice
+        </a>
+        <button type="button" class="btn btn-ghost" (click)="importInput.click()">
+          <lucide-icon name="upload" [size]="18"></lucide-icon> Import backup
+        </button>
+      </div>
     </div>
   }
 </section>

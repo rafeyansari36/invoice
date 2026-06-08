@@ -20,6 +20,7 @@ import {
   FolderOpen,
   ChevronDown,
   Download,
+  Upload,
   UserRoundPlus
 } from 'lucide-angular';
 import { routes } from './app.routes';
@@ -42,6 +43,7 @@ export const appConfig: ApplicationConfig = {
         FolderOpen,
         ChevronDown,
         Download,
+        Upload,
         UserRoundPlus
       })
     ),

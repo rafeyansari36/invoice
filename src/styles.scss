@@ -842,3 +842,56 @@ lucide-icon {
     text-decoration: none;
   }
 }
+
+
+/* ===== Backup / import-export ===== */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.saved-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.btn-ghost {
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  &:hover {
+    background: #f9fafb;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.saved-hint {
+  margin: 0;
+  padding: 0.6rem 1rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  background: #f9fafb;
+  border-bottom: 1px solid var(--line);
+}
+
+.saved-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+
+  .btn-add {
+    text-decoration: none;
+  }
+}
